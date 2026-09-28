@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anatomy Study Hub</title>
+<style>
+:root{--bg:#f3f6f4;--panel:#fff;--ink:#17302b;--mute:#5d7570;--body:#e6d3c1;--line:#b89f8a;--hov:#2a9d8f;--sel:#e76f51;--ok:#2e8b57;--bad:#c0392b;--bd:#d5dfdb;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b19;--panel:#182825;--ink:#e6f1ee;--mute:#93aca6;--body:#4a3d35;--line:#7d675a;--bd:#2b403c}}
+:root[data-theme="dark"]{--bg:#0f1b19;--panel:#182825;--ink:#e6f1ee;--mute:#93aca6;--body:#4a3d35;--line:#7d675a;--bd:#2b403c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;line-height:1.45}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:0 0 4px;font-family:Georgia,"Times New Roman",serif}
+.sub{color:var(--mute);margin:0 0 14px;font-size:.95rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.seg{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--panel)}
+button{font:inherit;color:inherit;cursor:pointer}
+.seg button{border:0;background:none;padding:8px 13px}
+.seg button[aria-pressed="true"]{background:var(--hov);color:#fff}
+button:focus-visible{outline:3px solid var(--sel);outline-offset:2px}
+.score{margin-left:auto;font-weight:700;color:var(--mute)}
+.main{display:flex;flex-wrap:wrap;gap:16px}
+.stage{flex:1 1 260px;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:8px;text-align:center}
+svg{max-width:100%;height:min(66vh,520px);width:auto}
+.reg *{fill:var(--body);stroke:var(--line);stroke-width:1;cursor:pointer;transition:fill .15s}
+.reg:hover *{fill:var(--hov);fill-opacity:.55}
+.reg.sel *{fill:var(--sel);fill-opacity:.8}
+.reg.ok *{fill:var(--ok);fill-opacity:.85}
+.reg.bad *{fill:var(--bad);fill-opacity:.8}
+.reg.pulse *{animation:p 1s infinite alternate}
+@keyframes p{from{fill:var(--sel);fill-opacity:.35}to{fill:var(--sel);fill-opacity:.95}}
+@media (prefers-reduced-motion:reduce){.reg.pulse *{animation:none;fill:var(--sel)}}
+.base{fill:var(--body);stroke:none}
+.panel{flex:1 1 260px;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:16px;min-height:220px}
+.hover{color:var(--mute);height:1.4em;margin:0 0 8px;font-size:.9rem}
+.panel h2{margin:0 0 4px;font-family:Georgia,serif;font-size:1.6rem}
+.panel p{margin:6px 0}
+.tag{display:inline-block;background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:2px 10px;font-size:.8rem;color:var(--mute)}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opts button{border:1px solid var(--bd);background:var(--bg);border-radius:10px;padding:10px;text-align:left}
+.opts button.ok{background:var(--ok);color:#fff}.opts button.bad{background:var(--bad);color:#fff}
+.next{margin-top:12px;border:0;background:var(--hov);color:#fff;border-radius:10px;padding:9px 16px}
+.fb{font-weight:700;margin-top:8px}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;background:var(--panel);border-bottom:1px solid var(--bd);padding:8px}
+nav a{color:var(--ink);text-decoration:none;padding:7px 12px;border-radius:9px}
+nav a.cur{background:var(--hov);color:#fff}
+nav a:focus-visible{outline:3px solid var(--sel)}
+.page{display:none}.page.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.cards a{display:block;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:16px;color:inherit;text-decoration:none}
+.cards a:hover{border-color:var(--hov)}
+.cards b{display:block;font-family:Georgia,serif;font-size:1.15rem;margin-bottom:4px}
+.cards span{color:var(--mute);font-size:.9rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+td,th{border-bottom:1px solid var(--bd);padding:6px 4px;text-align:left;vertical-align:top}
+.ov{fill:var(--sel);fill-opacity:0;stroke:var(--sel);stroke-width:1;stroke-opacity:.2}
+.ov.on{fill-opacity:.45;stroke-opacity:1}
+u{border-bottom:2px solid var(--sel);text-decoration:none}
+
+.page.on{animation:in .45s ease both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.25)}30%{transform:scale(1)}45%{transform:scale(1.18)}}
+.beat{display:inline-block;animation:beat 1.6s infinite}
+.cards a{transition:transform .2s,border-color .2s}.cards a:hover{transform:translateY(-4px)}
+.opts button{transition:background .2s,transform .15s}.opts button:hover{transform:translateX(4px)}
+.opts button.bad{animation:shake .35s}.opts button.ok{animation:pop .4s}
+.fb,.pop{animation:pop .4s both}
+.ov{transform-box:fill-box}
+#o-sagittal.on{animation:sx 3s ease-in-out infinite alternate}
+#o-transverse.on{animation:ty 3s ease-in-out infinite alternate}
+#o-frontal.on{transform-origin:center;animation:fz 2s ease-in-out infinite alternate}
+@keyframes sx{from{transform:translateX(-36px)}to{transform:translateX(36px)}}
+@keyframes ty{from{transform:translateY(-90px)}to{transform:translateY(200px)}}
+@keyframes fz{from{transform:scale(.85)}to{transform:scale(1.12)}}
+.track{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.track i{display:block;height:100%;width:0;background:var(--hov);transition:width .5s ease}
+.big{font-family:Georgia,serif;font-size:3.2rem;margin:6px 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.ver{text-align:center;color:var(--mute);font-size:.8rem;margin:24px 0 16px}
+</style>
+</head>
+<body>
+<nav><a href="#home">Home</a><a href="#directions">Directions</a><a href="#regions">Regions</a><a href="#planes">Planes</a><a href="#cavities">Cavities</a><a href="#quiz">Quiz</a></nav>
+<div class="wrap page" id="p-home">
+<h1>Anatomy Study Hub <span class="beat">🫀</span></h1>
+<p class="sub">Anatomical terminology, from your lesson PDF. Learn each topic, then test yourself.</p>
+<div class="cards">
+<a href="#directions"><b>Directional terms</b><span>Superior, medial, proximal and their opposites. Quiz included.</span></a>
+<a href="#regions"><b>Body regions</b><span>Tap a body to learn about 45 regional terms, or take a quiz.</span></a>
+<a href="#planes"><b>Body planes</b><span>Sagittal, frontal and transverse cuts, and what each one shows.</span></a>
+<a href="#cavities"><b>Body cavities</b><span>Tap the cavities to see what organs they hold.</span></a>
+<a href="#quiz"><b>Quiz challenge</b><span>Mixed or topic quizzes with a score and best result.</span></a>
+</div>
+<p class="sub" style="margin-top:16px">Start with the anatomical position: standing upright, feet shoulder-width apart and parallel, palms and toes facing forward. Every term assumes it, whatever position the person is actually in.</p>
+</div>
+<div class="wrap page" id="p-regions">
+<h1>Body Region Explorer</h1>
+<p class="sub">Anatomical position, regional terms. Tap a region to learn it, or test yourself.</p>
+<div class="bar">
+<div class="seg" id="modes">
+<button data-m="explore" aria-pressed="true">Explore</button>
+<button data-m="find" aria-pressed="false">Find it</button>
+<button data-m="name" aria-pressed="false">Name it</button>
+</div>
+<div class="seg" id="views">
+<button data-v="front" aria-pressed="true">Front</button>
+<button data-v="back" aria-pressed="false">Back</button>
+</div>
+<span class="score" id="score"></span>
+</div>
+<div class="main">
+<div class="stage"><svg id="svg" viewBox="0 0 200 430" role="img" aria-label="Human body in anatomical position"></svg></div>
+<div class="panel" id="panel"></div>
+</div>
+</div>
+
+<div class="wrap page" id="p-directions">
+<h1>Directional terms</h1>
+<p class="sub">They come in opposite pairs. Read the pairs, then take the quiz.</p>
+<div class="main">
+<div class="panel"><table>
+<tr><th>Pair</th><th>Meaning</th></tr>
+<tr><td>Superior / Inferior</td><td>Toward the head / toward the feet</td></tr>
+<tr><td>Anterior / Posterior</td><td>Front (ventral) / back (dorsal)</td></tr>
+<tr><td>Medial / Lateral</td><td>Toward / away from the midline</td></tr>
+<tr><td>Proximal / Distal</td><td>Closer to / farther from the limb's attachment to the trunk</td></tr>
+<tr><td>Superficial / Deep</td><td>Near / far from the body surface</td></tr>
+<tr><td>Ipsilateral / Contralateral</td><td>Same side / opposite side</td></tr>
+</table><p class="tag" style="margin-top:10px">Intermediate = between a medial and a lateral structure</p></div>
+<div class="panel"><p class="hover" id="dsc"></p><div id="dq"></div></div>
+</div></div>
+<div class="wrap page" id="p-planes">
+<h1>Body planes</h1>
+<p class="sub">A plane is an imaginary flat cut. The cut surface you see is a section.</p>
+<div class="bar"><div class="seg" id="plbtn">
+<button data-p="sagittal" aria-pressed="true">Sagittal</button>
+<button data-p="frontal" aria-pressed="false">Frontal</button>
+<button data-p="transverse" aria-pressed="false">Transverse</button></div></div>
+<div class="main">
+<div class="stage"><svg viewBox="0 0 200 430" role="img" aria-label="Body with a highlighted plane" id="plsvg"></svg></div>
+<div class="panel" id="plpanel"></div>
+</div></div>
+<div class="wrap page" id="p-cavities">
+<h1>Body cavities</h1>
+<p class="sub">Tap a cavity. Dorsal cavities hold the nervous system; the ventral cavity holds the viscera.</p>
+<div class="main">
+<div class="stage"><svg viewBox="0 0 200 430" role="img" aria-label="Body cavities" id="cvsvg"></svg></div>
+<div class="panel" id="cvpanel"></div>
+</div></div>
+<div class="wrap page" id="p-quiz">
+<h1>Quiz</h1>
+<p class="sub">Pick a topic and answer the questions. Your best score is saved on this device.</p>
+<div class="bar"><div class="seg" id="qt">
+<button data-t="mixed" aria-pressed="true">Mixed</button>
+<button data-t="directions" aria-pressed="false">Directions</button>
+<button data-t="regions" aria-pressed="false">Regions</button>
+<button data-t="planes" aria-pressed="false">Planes</button>
+<button data-t="cavities" aria-pressed="false">Cavities</button></div>
+<span class="score" id="qs"></span></div>
+<div class="panel"><div class="track"><i id="qbar"></i></div><div id="qa"></div></div>
+</div>
+<p class="ver">Anatomy Study Hub · Final version 3</p>
+<script>
+const R=(x,y,w,h,r=3)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}"/>`;
+const E=(x,y,a,b)=>`<ellipse cx="${x}" cy="${y}" rx="${a}" ry="${b}"/>`;
+// [id, term, meaning, view, shape, paired, note]
+const D=[
+// FRONT
+['cephalic','Cephalic','Head','front',E(100,32,21,26),0,'Also called cranial when describing direction (toward the head).'],
+['frontal','Frontal','Forehead','front',R(88,10,24,12,5),0,'Not to be confused with the frontal (coronal) plane.'],
+['orbital','Orbital','Eye','front',E(91,33,6,4),1,'The orbital cavities hold the eyeballs.'],
+['nasal','Nasal','Nose','front',R(97,38,6,10),0,'Nasal cavity is part of the upper airway.'],
+['oral','Oral','Mouth','front',R(92,50,16,6,3),0,'The oral cavity contains the tongue and teeth.'],
+['cervical','Cervical','Neck','front',R(90,58,20,14),0,'Cervical = neck (both front and back).'],
+['thoracic','Thoracic','Chest','front',R(72,72,56,62,6),0,'Sits above the diaphragm.'],
+['axillary','Axillary','Armpit','front',R(66,78,7,18,3),1,'Axilla = armpit.'],
+['sternal','Sternal','Breastbone','front',R(97,76,6,44),0,'The breastbone is anterior to the spine.'],
+['abdominal','Abdominal','Abdomen','front',R(74,134,52,50,4),0,'Below the diaphragm; holds most digestive organs.'],
+['umbilical','Umbilical','Navel','front',E(100,160,5,5),0,'The navel is inferior to the breastbone.'],
+['pelvic','Pelvic','Pelvis','front',R(76,184,48,24,4),0,'Pelvic cavity holds bladder, rectum, reproductive organs.'],
+['pubic','Pubic','Genital region','front',R(92,208,16,10,4),0,'Anterior and inferior part of the pelvic region.'],
+['acromial','Acromial','Point of the shoulder','front',E(60,78,9,8),1,'Seen from front and back.'],
+['brachial','Brachial','Arm (upper arm)','front',R(50,86,14,38,4),1,'Brachial = arm. Antebrachial = forearm.'],
+['antecubital','Antecubital','Front of the elbow','front',R(50,124,14,10),1,'The back of the elbow is olecranal.'],
+['antebrachial','Antebrachial','Forearm','front',R(49,134,14,36,4),1,'"Ante" = before the arm, i.e. the forearm.'],
+['carpal','Carpal','Wrist','front',R(49,170,14,8),1,'C for carpal, closer to the hand. T for tarsal, toward the toes.'],
+['manus','Manus','Hand','front',R(48,178,16,20,5),1,'Manus = hand. Pedal = foot.'],
+['digital','Digital','Fingers or toes','front',R(48,198,16,14,4),1,'Digital applies to both fingers and toes.'],
+['coxal','Coxal','Hip','front',R(68,208,14,18,5),1,'The hip region.'],
+['femoral','Femoral','Thigh','front',R(74,226,24,62,6),1,'The knee is distal to the thigh.'],
+['patellar','Patellar','Front of the knee','front',E(86,298,11,10),1,'Back of the knee is popliteal.'],
+['crural','Crural','Leg (shin)','front',R(76,308,20,66,5),1,'Crural = shin. Sural = calf (back).'],
+['tarsal','Tarsal','Ankle','front',R(76,374,20,12),1,'Tarsal = ankle. Carpal = wrist.'],
+['pedal','Pedal','Foot','front',R(76,386,20,28,6),1,'Pedal = foot.'],
+['digitalt','Digital (toes)','Toes','front',R(74,414,22,10,4),1,'Digital applies to both fingers and toes.'],
+// BACK
+['occipital','Occipital','Back of the head / base of skull','back',E(100,32,21,26),0,'Posterior part of the cephalic region.'],
+['cervicalb','Cervical','Neck','back',R(90,58,20,14),0,'Cervical = neck (both front and back).'],
+['dorsal','Dorsal (back)','The back','back',R(72,72,56,104,6),0,'Dorsal = posterior. The spine is dorsal to the breastbone.'],
+['scapular','Scapular','Shoulder blade','back',R(74,76,22,30,6),1,'Scapula = shoulder blade.'],
+['lumbar','Lumbar','Lower back / loin','back',R(78,138,44,38,4),0,'Between the ribs and the pelvis.'],
+['vertebral','Vertebral','Spinal column','back',R(97,74,6,64),0,'The vertebral canal houses the spinal cord.'],
+['sacral','Sacral','Between the hips','back',R(92,176,16,16,4),0,'Base of the spine.'],
+['gluteal','Gluteal','Buttock','back',E(86,206,14,17),1,'Gluteus = buttock.'],
+['acromialb','Acromial','Point of the shoulder','back',E(60,78,9,8),1,'Seen from front and back.'],
+['brachialb','Brachial','Arm (upper arm)','back',R(50,86,14,38,4),1,'Brachial = arm.'],
+['olecranal','Olecranal','Back of the elbow','back',R(50,124,14,10),1,'The front of the elbow is antecubital.'],
+['antebrachialb','Antebrachial','Forearm','back',R(49,134,14,36,4),1,'Forearm.'],
+['manusb','Manus','Hand','back',R(48,170,16,30,6),1,'Manus = hand.'],
+['femoralb','Femoral','Thigh','back',R(74,224,24,62,6),1,'Thigh.'],
+['popliteal','Popliteal','Back of the knee','back',R(76,286,20,16,4),1,'Front of the knee is patellar.'],
+['sural','Sural','Calf','back',R(76,302,20,54,6),1,'Sural = calf. Crural = shin.'],
+['calcaneal','Calcaneal','Heel','back',R(78,356,16,16,5),1,'Calcaneus = heel bone.'],
+['plantar','Plantar','Sole of the foot','back',R(76,372,20,32,6),1,'Plantar = sole.']
+];
+const $=s=>document.querySelector(s);
+let mode='explore',view='front',target=null,locked=false,ok=0,tot=0;
+const svg=$('#svg'),panel=$('#panel');
+const inView=()=>D.filter(d=>d[3]===view);
+const bodyBase=`<g class="base">${R(70,66,60,150,8)}${R(50,80,16,120,6)}${R(134,80,16,120,6)}${R(72,206,56,20,6)}${R(74,224,24,190,6)}${R(102,224,24,190,6)}</g>`;
+function draw(){
+  svg.innerHTML=bodyBase+inView().map(d=>{
+    const m=d[5]?`<g transform="translate(200,0) scale(-1,1)">${d[4]}</g>`:'';
+    return `<g class="reg" data-id="${d[0]}" tabindex="0" role="button" aria-label="${d[1]}">${d[4]}${m}</g>`;
+  }).join('');
+  svg.querySelectorAll('.reg').forEach(g=>{
+    g.addEventListener('click',()=>pick(g.dataset.id));
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(g.dataset.id)}});
+    g.addEventListener('mouseenter',()=>{if(mode==='explore'){const d=get(g.dataset.id);$('#hv')&&($('#hv').textContent=d[1]+' — '+d[2])}});
+  });
+}
+const get=id=>D.find(d=>d[0]===id);
+const reg=id=>svg.querySelector(`[data-id="${id}"]`);
+function clear(){svg.querySelectorAll('.reg').forEach(g=>g.classList.remove('sel','ok','bad','pulse'))}
+function score(){$('#score').textContent=mode==='explore'?'':`Score ${ok}/${tot}`}
+function explorePanel(d){
+  panel.innerHTML=`<p class="hover" id="hv">Hover or tap a region</p>`+(d?`<h2>${d[1]}</h2><p class="tag">${d[2]}</p><p>${d[6]}</p>`:`<p>Tap any part of the body to see its anatomical term, what it means, and a tip to remember it.</p><p class="tag">${inView().length} regions in this view</p>`);
+}
+function nextQ(){
+  clear();locked=false;
+  const pool=inView().filter(d=>d!==target);
+  target=pool[Math.floor(Math.random()*pool.length)];
+  if(mode==='find'){
+    panel.innerHTML=`<p class="hover">Find it</p><h2>${target[1]}</h2><p>Tap the ${view} region that matches this term.</p><div id="fb"></div>`;
+  }else{
+    reg(target[0]).classList.add('pulse');
+    const wrong=inView().filter(d=>d!==target&&d[1]!==target[1]).sort(()=>Math.random()-.5).slice(0,3);
+    const opts=[target,...wrong].sort(()=>Math.random()-.5);
+    panel.innerHTML=`<p class="hover">Name it</p><h2>What is the pulsing region?</h2><div class="opts">${opts.map(o=>`<button data-id="${o[0]}">${o[1]}</button>`).join('')}</div><div id="fb"></div>`;
+    panel.querySelectorAll('.opts button').forEach(b=>b.onclick=()=>answer(b.dataset.id,b));
+  }
+  score();
+}
+function answer(id,btn){
+  if(locked)return;locked=true;tot++;
+  const good=get(id)[1]===target[1];
+  if(good)ok++;
+  clear();
+  reg(target[0]).classList.add('ok');
+  if(!good&&mode==='find')reg(id).classList.add('bad');
+  if(btn)btn.classList.add(good?'ok':'bad');
+  if(mode==='name')panel.querySelectorAll('.opts button').forEach(b=>{if(get(b.dataset.id)[1]===target[1])b.classList.add('ok')});
+  $('#fb').innerHTML=`<p class="fb" style="color:var(${good?'--ok':'--bad'})">${good?'Correct!':(mode==='find'?'That was '+get(id)[1]+'.':'Not quite.')}</p><p><b>${target[1]}</b> = ${target[2]}. ${target[6]}</p><button class="next" id="nx">Next</button>`;
+  $('#nx').onclick=nextQ;$('#nx').focus();score();
+}
+function pick(id){
+  if(mode==='explore'){clear();reg(id).classList.add('sel');explorePanel(get(id))}
+  else if(mode==='find')answer(id);
+}
+function setMode(m){
+  mode=m;target=null;ok=0;tot=0;
+  document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+  draw();
+  if(m==='explore'){explorePanel();score()}else nextQ();
+}
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>{
+  view=b.dataset.v;
+  document.querySelectorAll('#views button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  setMode(mode);
+});
+setMode('explore');
+
+const pgs=['home','directions','regions','planes','cavities','quiz'];
+function route(){const h=(location.hash||'#home').slice(1),p=pgs.includes(h)?h:'home';
+document.querySelectorAll('.page').forEach(e=>e.classList.toggle('on',e.id==='p-'+p));
+document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('cur',a.getAttribute('href')==='#'+p));scrollTo(0,0)}
+addEventListener('hashchange',route);route();
+// Directions quiz
+const T=['Superior','Inferior','Anterior','Posterior','Medial','Lateral','Proximal','Distal','Superficial','Deep','Ipsilateral','Contralateral'];
+const Q=[['The forehead is ___ to the nose.','Superior'],['The navel is ___ to the breastbone.','Inferior'],['The breastbone is ___ to the spine.','Anterior'],['The heart is ___ to the breastbone.','Posterior'],['The nose is ___ to the eye.','Medial'],['The arms are ___ to the chest.','Lateral'],['The elbow is ___ to the wrist.','Proximal'],['The knee is ___ to the thigh.','Distal'],['The skin is ___ to the skeleton.','Superficial'],['The lungs are ___ to the rib cage.','Deep'],['The spleen and descending colon are ___.','Ipsilateral'],['The spleen and gallbladder are ___.','Contralateral']];
+let dq,dok=0,dtot=0,dl=false;
+function dNext(){dl=false;dq=Q[Math.random()*Q.length|0];
+const o=[dq[1],...T.filter(t=>t!==dq[1]).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+$('#dsc').textContent=`Quiz score ${dok}/${dtot}`;
+$('#dq').innerHTML=`<h2>${dq[0].replace('___','<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>')}</h2><div class="opts">${o.map(t=>`<button>${t}</button>`).join('')}</div><div id="dfb"></div>`;
+document.querySelectorAll('#dq .opts button').forEach(b=>b.onclick=()=>{if(dl)return;dl=true;dtot++;const g=b.textContent===dq[1];if(g)dok++;
+b.classList.add(g?'ok':'bad');document.querySelectorAll('#dq .opts button').forEach(x=>{if(x.textContent===dq[1])x.classList.add('ok')});
+$('#dsc').textContent=`Quiz score ${dok}/${dtot}`;
+$('#dfb').innerHTML=`<p class="fb" style="color:var(${g?'--ok':'--bad'})">${g?'Correct!':'The answer is '+dq[1]+'.'}</p><button class="next" id="dn">Next</button>`;$('#dn').onclick=dNext;$('#dn').focus()})}
+dNext();
+// Planes
+const PL={sagittal:['Sagittal plane','Divides the body or an organ vertically into right and left. Midsagittal (median) gives equal halves; parasagittal gives unequal halves.','Median scan shows the vertebral column, rectum and intestines.'],
+frontal:['Frontal (coronal) plane','Divides the body into an anterior (front) and a posterior (back) part. "Corona" is Latin for crown.','Frontal scan shows both lungs, the heart, liver, stomach and spleen.'],
+transverse:['Transverse (horizontal) plane','Divides the body into superior (upper) and inferior (lower) parts. It produces cross sections.','Transverse scan shows the liver, aorta, pancreas, spleen and spinal cord.']};
+$('#plsvg').innerHTML=bodyBase+`<rect class="ov on" id="o-sagittal" x="96" y="2" width="8" height="424"/><rect class="ov" id="o-frontal" x="58" y="62" width="84" height="150" stroke-dasharray="4"/><rect class="ov" id="o-transverse" x="30" y="146" width="140" height="8"/>`;
+function plane(p){document.querySelectorAll('#plbtn button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===p));
+document.querySelectorAll('.ov').forEach(o=>o.classList.toggle('on',o.id==='o-'+p));
+$('#plpanel').innerHTML=`<h2>${PL[p][0]}</h2><p>${PL[p][1]}</p><p class="tag">${PL[p][2]}</p>`+(p==='frontal'?'<p>The dashed box stands for a plane seen edge-on: it separates front from back.</p>':'')}
+document.querySelectorAll('#plbtn button').forEach(b=>b.onclick=()=>plane(b.dataset.p));plane('sagittal');
+// Cavities
+const C=[['thoracic','Thoracic cavity','Ventral','Surrounded by the ribs, above the diaphragm. Contains two pleural cavities and the mediastinum.',R(72,72,56,62,6),0],
+['abdominal','Abdominal cavity','Ventral (abdominopelvic)','Stomach, liver, spleen, gallbladder, small intestine and most of the large intestine. Kidneys sit behind the peritoneal cavity (retroperitoneal).',R(74,134,52,50,4),0],
+['pelvic','Pelvic cavity','Ventral (abdominopelvic)','Urinary bladder, urethra, rectum and reproductive organs.',R(76,184,48,26,4),0],
+['vertebral','Vertebral canal','Dorsal','Houses the spinal cord. Runs behind the ventral cavity; lined by meninges.',R(96,58,8,150,3),0],
+['pleural','Pleural cavity','Ventral (thoracic)','Two fluid-filled spaces, one around each lung. Lined by parietal and visceral pleura.',R(74,76,16,54,5),1],
+['mediastinum','Mediastinum','Ventral (thoracic)','Middle wall of the thorax: heart, major blood vessels, thymus, trachea and esophagus.',R(90,76,20,54,4),0],
+['pericardial','Pericardial cavity','Ventral (thoracic)','Nested inside the mediastinum, surrounding the heart like Russian nesting dolls. Lined by parietal and visceral pericardium.',E(100,108,8,12),0],
+['cranial','Cranial cavity','Dorsal','Houses the brain, lined by meninges.',E(100,32,21,26),0]];
+const cg=id=>C.find(c=>c[0]===id);
+$('#cvsvg').innerHTML=bodyBase+C.map(c=>`<g class="reg" data-id="${c[0]}" tabindex="0" role="button" aria-label="${c[1]}">${c[4]}${c[5]?`<g transform="translate(200,0) scale(-1,1)">${c[4]}</g>`:''}</g>`).join('')+`<line x1="74" y1="134" x2="126" y2="134" stroke="var(--ink)" stroke-width="2"/><text x="100" y="146" font-size="7" text-anchor="middle" fill="var(--ink)">diaphragm</text>`;
+function cav(id){document.querySelectorAll('#cvsvg .reg').forEach(g=>g.classList.toggle('sel',g.dataset.id===id));const c=cg(id);
+$('#cvpanel').innerHTML=`<h2>${c[1]}</h2><p class="tag">${c[2]}</p><p>${c[3]}</p>`}
+document.querySelectorAll('#cvsvg .reg').forEach(g=>{g.onclick=()=>cav(g.dataset.id);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cav(g.dataset.id)}}});
+$('#cvpanel').innerHTML='<h2>Tap a cavity</h2><p>Serous membranes are double-layered: the <b>parietal</b> layer lines the cavity wall and the <b>visceral</b> layer covers the organ.</p><p class="tag">Parietal = wall. Visceral = organ.</p>';
+
+// Quiz challenge
+const sh=a=>[...a].sort(()=>Math.random()-.5),pk=(a,n)=>sh(a).slice(0,n);
+const mk=(q,c,w)=>({q,c,w});
+const SP=[['Which plane divides the body into right and left?','Sagittal',['Frontal','Transverse','Oblique']],
+['Which plane divides the body into front and back?','Frontal (coronal)',['Sagittal','Transverse','Midsagittal']],
+['Which plane produces cross sections?','Transverse',['Sagittal','Frontal','Median']],
+['A sagittal cut giving unequal halves is called…','Parasagittal',['Midsagittal','Median','Transverse']],
+['The midsagittal plane is also called the…','Median plane',['Coronal plane','Horizontal plane','Frontal plane']],
+['"Corona" is Latin for…','Crown',['Arrow','Belly','Tail']],
+['A cut through the body along a transverse plane gives a…','Cross section',['Median section','Frontal section','Oblique section']],
+['A plane running directly down the middle of the body is…','Midsagittal',['Parasagittal','Frontal','Transverse']],
+['A scan showing both lungs and the heart side by side uses which plane?','Frontal (coronal)',['Sagittal','Transverse','Oblique']],
+['A scan showing the vertebral column and rectum in one view uses which plane?','Median (midsagittal)',['Frontal','Transverse','Oblique']],
+['A scan showing the liver, aorta, pancreas and spinal cord uses which plane?','Transverse',['Sagittal','Frontal','Median']],
+['Which plane separates the upper body from the lower body?','Transverse (horizontal)',['Sagittal','Frontal (coronal)','Midsagittal']]].map(x=>mk(...x));
+const SC=[['Which cavity houses the brain?','Cranial cavity',['Vertebral canal','Thoracic cavity','Pelvic cavity']],
+['Which cavity houses the spinal cord?','Vertebral canal',['Cranial cavity','Abdominal cavity','Mediastinum']],
+['The diaphragm separates the thoracic cavity from the…','Abdominal cavity',['Cranial cavity','Vertebral canal','Oral cavity']],
+['The heart sits in the pericardial cavity, inside the…','Mediastinum',['Pleural cavity','Pelvic cavity','Vertebral canal']],
+['Which layer of a serous membrane covers the organ itself?','Visceral',['Parietal','Meningeal','Synovial']],
+['Which membranes line the cranial cavity and vertebral canal?','Meninges',['Pleura','Pericardium','Peritoneum']],
+['The urinary bladder is in the…','Pelvic cavity',['Thoracic cavity','Cranial cavity','Mediastinum']],
+['Each pleural cavity encloses a…','Lung',['Kidney','Heart','Liver']],
+['Which cavity holds the eyeballs?','Orbital cavity',['Oral cavity','Nasal cavity','Cranial cavity']],
+['Which structure separates the thoracic and abdominal cavities?','Diaphragm',['Mediastinum','Peritoneum','Meninges']],
+['Which organ is in the abdominal cavity?','Stomach',['Heart','Brain','Urinary bladder']],
+['Which organ is in the pelvic cavity?','Urinary bladder',['Liver','Spleen','Thymus']],
+['The thymus and trachea are found in the…','Mediastinum',['Pelvic cavity','Cranial cavity','Abdominal cavity']],
+['The dorsal body cavity encloses organs of the…','Nervous system',['Digestive system','Respiratory system','Urinary system']],
+['The organs of the ventral cavity are collectively called the…','Viscera',['Meninges','Pleura','Axial region']],
+['Which cavity contains the tongue and teeth?','Oral cavity',['Nasal cavity','Orbital cavity','Cranial cavity']],
+['Synovial cavities are found in…','Freely movable joints',['The skull','The abdomen','The middle ear']],
+['The kidneys are described as…','Retroperitoneal',['Pericardial','Pleural','Meningeal']],
+['The parietal layer of a serous membrane lines the…','Cavity wall',['Organ surface','Spinal cord','Skin']]].map(x=>mk(...x));
+const DEF={Superior:'toward the head',Inferior:'toward the feet',Anterior:'toward the front of the body',Posterior:'toward the back of the body',Medial:'toward the midline',Lateral:'away from the midline',Proximal:"closer to a limb's attachment to the trunk",Distal:"farther from a limb's attachment to the trunk",Superficial:'toward the body surface',Deep:'away from the body surface',Ipsilateral:'on the same side',Contralateral:'on the opposite side'};
+const OP={Superior:'Inferior',Anterior:'Posterior',Medial:'Lateral',Proximal:'Distal',Superficial:'Deep',Ipsilateral:'Contralateral'};
+Object.keys(OP).forEach(k=>OP[OP[k]]=k);
+const UD=D.filter((d,i)=>D.findIndex(e=>e[1]===d[1])===i);
+const fw=n=>n.split(' ')[0];
+const uq=a=>a.filter((x,i)=>a.findIndex(y=>y.q===x.q)===i);
+const dirQ=x=>mk(x[0].replace('___','…'),x[1],pk(T.filter(t=>t!==x[1]),3));
+const regQ=d=>mk(`Which term means "${d[2]}"?`,d[1],pk([...new Set(UD.map(e=>e[1]))].filter(n=>fw(n)!==fw(d[1])),3));
+const regQ2=d=>mk(`What does the term "${d[1]}" refer to?`,d[2],pk([...new Set(UD.filter(e=>fw(e[1])!==fw(d[1])).map(e=>e[2]))],3));
+const dirPool=()=>uq([...Q.map(dirQ),...T.map(t=>mk(`Which term means "${DEF[t]}"?`,t,pk(T.filter(x=>x!==t),3))),...T.map(t=>mk(`Which term is the opposite of "${t}"?`,OP[t],pk(T.filter(x=>x!==t&&x!==OP[t]),3)))]);
+const regPool=()=>uq([...UD.map(regQ),...UD.map(regQ2)]);
+// Draws n questions the visitor has not seen yet; resets once the pool is used up
+function seenGet(k){try{return JSON.parse(localStorage.getItem('ash-seen-'+k))||[]}catch(e){return SEEN[k]||[]}}
+function seenSet(k,v){SEEN[k]=v;try{localStorage.setItem('ash-seen-'+k,JSON.stringify(v))}catch(e){}}
+const SEEN={};
+function drawQ(k,pool,n){let seen=new Set(seenGet(k)),fresh=pool.filter(x=>!seen.has(x.q)),out;
+if(fresh.length<n){out=[...fresh,...pk(pool.filter(x=>!fresh.includes(x)),n-fresh.length)];seen=new Set(out.map(x=>x.q))}
+else{out=pk(fresh,n);out.forEach(x=>seen.add(x.q))}
+seenSet(k,[...seen]);return out}
+const BUILD={mixed:()=>uq([...drawQ('regions',regPool(),3),...drawQ('directions',dirPool(),3),...drawQ('planes',SP,2),...drawQ('cavities',SC,2)]),
+directions:()=>drawQ('directions',dirPool(),8),regions:()=>drawQ('regions',regPool(),8),planes:()=>drawQ('planes',SP,8),cavities:()=>drawQ('cavities',SC,8)};
+let qt='mixed',qs=[],qi=0,qsc=0,qk=0,ql=false;
+function best(t,v){try{const k='ash-best-'+t,o=+localStorage.getItem(k)||0;if(v>o)localStorage.setItem(k,v);return Math.max(o,v)}catch(e){return v}}
+function qStart(t){clearInterval(window.qiv);qt=t;qs=sh(BUILD[t]());qi=0;qsc=0;qk=0;
+document.querySelectorAll('#qt button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t));qShow()}
+function qShow(){ql=false;$('#qbar').style.width=(qi/qs.length*100)+'%';
+$('#qs').textContent=`Score ${qsc}/${qi}${qk>1?'  🔥 '+qk:''}`;
+if(qi>=qs.length)return qEnd();
+const x=qs[qi],o=sh([x.c,...x.w]);
+$('#qa').innerHTML=`<p class="hover">Question ${qi+1} of ${qs.length}</p><h2 class="pop">${x.q}</h2><div class="opts">${o.map(t=>`<button>${t}</button>`).join('')}</div><div id="qfb"></div>`;
+document.querySelectorAll('#qa .opts button').forEach(b=>b.onclick=()=>{if(ql)return;ql=true;
+const g=b.textContent===x.c;qi++;if(g){qsc++;qk++}else qk=0;b.classList.add(g?'ok':'bad');
+document.querySelectorAll('#qa .opts button').forEach(y=>{if(y.textContent===x.c)y.classList.add('ok')});
+$('#qbar').style.width=(qi/qs.length*100)+'%';$('#qs').textContent=`Score ${qsc}/${qi}${qk>1?'  🔥 '+qk:''}`;
+$('#qfb').innerHTML=`<p class="fb" style="color:var(${g?'--ok':'--bad'})">${g?['Correct!','Nice one!','Spot on!'][Math.random()*3|0]:'The answer is '+x.c+'.'}</p><button class="next" id="qn">${qi>=qs.length?'See results':'Next'}</button>`;
+$('#qn').onclick=qShow;$('#qn').focus()})}
+function qEnd(){const p=qsc/qs.length,b=best(qt,qsc);
+const m=p===1?'Perfect score! 🏆':p>=.75?'Great work!':p>=.5?'Good start. Review and try again.':'Keep studying, you will get there.';
+$('#qa').innerHTML=`<div class="pop"><h2>${m}</h2><p class="big" id="qc">0</p><p>out of ${qs.length}. Best on this topic: ${b}.</p><button class="next" id="qr">Try again</button></div>`;
+let n=0;clearInterval(window.qiv);window.qiv=setInterval(()=>{const e=$('#qc');if(!e){clearInterval(window.qiv);return}e.textContent=n;if(n>=qsc)clearInterval(window.qiv);n++},120);
+$('#qr').onclick=()=>qStart(qt);$('#qr').focus()}
+document.querySelectorAll('#qt button').forEach(b=>b.onclick=()=>qStart(b.dataset.t));
+qStart('mixed');
+</script>
+</body>
+</html>
